@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#090b12" />
+  <meta name="description" content="DGfilms - descubra filmes e séries." />
+  <title>DGfilms</title>
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <a class="brand" href="#"><span class="brand-mark">DG</span><span>films</span></a>
+      <nav><button class="nav active" data-page="home">Início</button><button class="nav" data-page="movies">Filmes</button><button class="nav" data-page="tv">Séries</button><button class="nav" data-page="watchlist">Minha lista</button></nav>
+      <div class="top-actions"><button class="icon-btn" id="search-open" aria-label="Pesquisar">⌕</button><button class="profile" id="settings-open" aria-label="Configurações">DG</button></div>
+    </header>
+    <main>
+      <section id="hero" class="hero"><div class="hero-copy"><span class="eyebrow">SEU PRÓXIMO PLAY COMEÇA AQUI</span><h1>Descubra sua<br><em>próxima história.</em></h1><p>Explore filmes e séries, encontre novidades e organize o que deseja assistir.</p><div class="hero-actions"><button class="primary" id="explore">Explorar catálogo</button><button class="secondary" id="hero-info">Como funciona</button></div></div><div class="hero-art"><div class="orb"></div><div class="poster-stack"><div class="poster poster-a"></div><div class="poster poster-b"></div><div class="poster poster-c"></div></div></div></section>
+      <section id="search-panel" class="search-panel hidden"><input id="search-input" type="search" placeholder="Buscar filmes e séries..." autocomplete="off"><button id="search-close" class="secondary">Fechar</button></section>
+      <section class="content-section"><div class="section-head"><div><span class="eyebrow" id="section-kicker">SELEÇÃO DG</span><h2 id="section-title">Em destaque</h2></div><span id="status" class="status">Configure a API para carregar o catálogo</span></div><div id="grid" class="grid"></div><div class="more-wrap"><button id="load-more" class="secondary hidden">Carregar mais títulos</button></div></section>
+      <section id="details" class="details hidden"></section>
+    </main>
+    <footer><span class="brand small"><span class="brand-mark">DG</span><span>films</span></span><span>Este produto usa a API do TMDB, mas não é endossado nem certificado pelo TMDB. Catálogo informativo; reprodução por fontes autorizadas.</span><button id="footer-settings">Configurações da API</button></footer>
+    <div id="modal" class="modal hidden"><div class="modal-card"><button class="modal-x" id="modal-close">×</button><span class="eyebrow">PERSONALIZE O DGfilms</span><h2>Configurações</h2><p>Insira seu token de leitura da API do TMDB para carregar os dados do catálogo.</p><label for="api-token">TMDB Read Access Token</label><input id="api-token" type="password" placeholder="Cole seu token aqui"><div class="modal-actions"><a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noreferrer">Obter credencial no TMDB ↗</a><button class="primary" id="save-token">Salvar token</button></div><p class="fine">Nesta versão inicial, o token fica armazenado neste dispositivo e pode ser visto por quem tiver acesso ao aparelho. Para publicação, recomendamos mover as chamadas para um proxy seguro.</p></div></div>
+    <div id="toast" class="toast"></div>
+  </div>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+:root{font-family:'DM Sans',sans-serif;color:#f5f6fa;background:#090b12;font-synthesis:none;font-optical-sizing:auto}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% 0%,#19172a 0,transparent 34%),#090b12}button,a{font:inherit}button{cursor:pointer}.topbar{height:78px;padding:0 clamp(20px,5vw,76px);display:flex;align-items:center;gap:48px;border-bottom:1px solid #ffffff12;background:#090b12e8;position:sticky;top:0;z-index:5;backdrop-filter:blur(18px)}.brand{display:flex;align-items:center;gap:9px;font:800 25px Manrope,sans-serif;letter-spacing:-1.5px;color:#fff;text-decoration:none}.brand-mark{display:grid;place-items:center;width:35px;height:35px;border-radius:11px;background:linear-gradient(135deg,#a78bfa,#6d4ee8);font-size:13px;letter-spacing:-.5px;box-shadow:0 5px 22px #7957ed55}.topbar nav{display:flex;gap:27px;flex:1}.nav{border:0;background:none;color:#a6a8b4;font-size:13px;padding:28px 0}.nav.active,.nav:hover{color:#fff}.nav.active{box-shadow:inset 0 -2px #a78bfa}.top-actions{display:flex;align-items:center;gap:17px}.icon-btn{font-size:30px;color:#fff;border:0;background:none}.profile{width:34px;height:34px;border:0;border-radius:50%;background:#25213c;color:#c9b9ff;font-size:11px;font-weight:800}.hero{min-height:440px;padding:65px clamp(24px,8vw,120px);display:flex;align-items:center;overflow:hidden;position:relative}.hero-copy{position:relative;z-index:2;max-width:570px}.eyebrow{font-size:10px;letter-spacing:2.4px;color:#b59cff;font-weight:700}.hero h1{font:800 clamp(42px,6vw,72px)/1.05 Manrope,sans-serif;letter-spacing:-3.5px;margin:19px 0}.hero h1 em{font-style:normal;color:#b49bff}.hero p{max-width:420px;color:#a4a6b2;line-height:1.8;font-size:14px}.hero-actions{display:flex;gap:12px;margin-top:27px}.primary,.secondary{border-radius:9px;padding:13px 19px;font-weight:700;font-size:12px}.primary{background:#a58af7;color:#151020;border:1px solid #a58af7}.primary:hover{background:#c0afff}.secondary{background:#ffffff0b;color:#fff;border:1px solid #ffffff20}.hero-art{position:absolute;right:7%;top:30px;width:43%;height:390px;opacity:.88}.orb{position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,#7758ce77,#382d6a20 65%,transparent 70%);right:20%;top:20px;filter:blur(8px)}.poster-stack{position:absolute;inset:15px 0}.poster{position:absolute;width:185px;height:280px;border-radius:13px;background:linear-gradient(150deg,#3c315b,#131522 70%);border:1px solid #ffffff20;box-shadow:0 25px 60px #0009}.poster:after{content:"DGfilms";position:absolute;bottom:18px;left:18px;font:800 20px Manrope;color:#ffffffb0}.poster-a{right:48%;top:38px;transform:rotate(-13deg);background:linear-gradient(145deg,#e1a76c,#442c52 62%,#141421)}.poster-b{right:22%;top:12px;transform:rotate(8deg);background:linear-gradient(145deg,#9a8bd4,#28314e 60%,#11131f)}.poster-c{right:0;top:70px;transform:rotate(17deg);background:linear-gradient(145deg,#b46e79,#402a50 65%,#11131f)}.content-section{padding:25px clamp(20px,5vw,76px) 70px}.section-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:23px}.section-head h2{font:750 27px Manrope;margin:8px 0 0;letter-spacing:-1px}.status{font-size:11px;color:#858797}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:24px 16px}.movie-card{position:relative;min-width:0}.poster-button{width:100%;aspect-ratio:2/3;padding:0;border:1px solid #ffffff14;border-radius:10px;overflow:hidden;background:#171925;position:relative}.poster-button img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s}.movie-card:hover img{transform:scale(1.045)}.rating{position:absolute;top:9px;left:9px;background:#090b12d9;border:1px solid #ffffff20;border-radius:5px;padding:5px 7px;font-size:10px;color:#f4d38b}.movie-meta h3{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:9px 0 4px}.movie-meta span{font-size:10px;color:#888b9a}.save-btn{position:absolute;right:8px;top:8px;width:28px;height:28px;border:1px solid #ffffff30;border-radius:50%;background:#090b12cf;color:#fff}.save-btn.saved{color:#f59ab4}.no-poster{height:100%;display:grid;place-items:center;color:#a58af7;font:800 18px Manrope}.search-panel{display:flex;gap:12px;padding:0 clamp(20px,5vw,76px) 25px}.search-panel input,.modal input{flex:1;min-width:0;background:#141722;border:1px solid #ffffff20;border-radius:9px;padding:14px;color:#fff;outline:none}.search-panel input:focus,.modal input:focus{border-color:#a58af7}.hidden{display:none!important}.details{padding:0 clamp(20px,5vw,76px) 60px}.detail-backdrop{min-height:430px;background-size:cover;background-position:center;border-radius:14px;padding:24px;display:flex;flex-direction:column;justify-content:space-between}.detail-content{max-width:590px;padding:40px 0 25px}.detail-content h2{font:800 clamp(32px,5vw,54px) Manrope;margin:12px 0}.detail-content p{line-height:1.8;color:#d0d0d8;font-size:14px}.detail-facts{font-size:12px;color:#c8b8ff;margin:17px 0}.detail-note{padding:25px 4px;color:#a5a6b2;font-size:13px;line-height:1.7}.detail-note b{color:white}.detail-note a,.modal a,footer button{color:#b9a5ff;text-decoration:none;background:none;border:0;font-size:12px}.modal{position:fixed;inset:0;background:#000b;z-index:10;display:grid;place-items:center;padding:20px}.modal-card{width:min(100%,480px);background:#111520;border:1px solid #ffffff1c;border-radius:16px;padding:30px;position:relative;box-shadow:0 25px 90px #000}.modal-card h2{font:800 27px Manrope;margin:10px 0}.modal-card p{color:#a6a8b4;font-size:13px;line-height:1.7}.modal-card label{display:block;font-size:11px;margin:20px 0 8px;color:#d6d6df}.modal-x{position:absolute;right:18px;top:14px;background:none;border:0;color:#aaa;font-size:27px}.modal-actions{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:15px}.fine{font-size:10px!important;color:#777b8b!important;margin-top:20px}.toast{position:fixed;bottom:25px;left:50%;transform:translate(-50%,20px);background:#eee8ff;color:#171020;padding:12px 18px;border-radius:9px;font-size:12px;font-weight:700;opacity:0;transition:.2s;z-index:20;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}.empty{grid-column:1/-1;color:#999;padding:35px 0}footer{padding:25px clamp(20px,5vw,76px);border-top:1px solid #ffffff14;display:flex;align-items:center;gap:22px;color:#777b8b;font-size:10px}.small{font-size:17px}.small .brand-mark{width:26px;height:26px;border-radius:8px;font-size:10px}footer span:nth-child(2){flex:1}@media(max-width:700px){.topbar{height:65px;padding:0 17px;gap:16px}.brand{font-size:21px}.topbar nav{gap:15px;overflow:auto}.nav{font-size:11px;padding:24px 0;white-space:nowrap}.top-actions{gap:8px}.hero{min-height:390px;padding:55px 23px}.hero-art{right:-150px;opacity:.35;width:75%}.hero h1{font-size:49px}.content-section{padding:20px 17px 55px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 12px}.section-head{display:block}.status{display:block;margin-top:10px}.search-panel{padding:0 17px 20px}.details{padding:0 17px 40px}.detail-backdrop{min-height:480px}footer{padding:20px 17px;flex-wrap:wrap}footer span:nth-child(2){flex-basis:100%;order:3}.modal-card{padding:25px 20px}}
+
+.more-wrap{display:flex;justify-content:center;padding:30px 0 0}.more-wrap button{min-width:190px}.more-wrap button:disabled{opacity:.6;cursor:wait}.cast{font-size:12px;color:#c5c6d0;line-height:1.7;margin:12px 0 20px}.cast b{color:#fff}
+
+  </style>
+  <script type="module">
+
+const API = "https://api.themoviedb.org/3";
+const IMG = "https://image.tmdb.org/t/p/w500";
+const BACKDROP = "https://image.tmdb.org/t/p/w1280";
+const $ = (selector) => document.querySelector(selector);
+
+function readList() {
+  try {
+    const value = JSON.parse(localStorage.getItem("dgfilms_list") || "[]");
+    return Array.isArray(value) ? value : [];
+  } catch {
+    return [];
+  }
+}
+
+const state = {
+  page: "home",
+  token: localStorage.getItem("dgfilms_tmdb_token") || "",
+  list: readList(),
+  query: "",
+  currentPage: 0,
+  totalPages: 1,
+  loading: false,
+  requestId: 0,
+  currentItems: [],
+};
+
+const grid = $("#grid");
+const title = $("#section-title");
+const status = $("#status");
+const modal = $("#modal");
+const moreButton = $("#load-more");
+
+function toast(message) {
+  const element = $("#toast");
+  element.textContent = message;
+  element.classList.add("show");
+  window.setTimeout(() => element.classList.remove("show"), 2600);
+}
+
+function escapeHtml(value = "") {
+  return String(value).replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  })[character]);
+}
+
+function mediaType(item) {
+  return item.media_type || (item.first_air_date ? "tv" : "movie");
+}
+
+function poster(item) {
+  return item.poster_path ? `${IMG}${item.poster_path}` : "";
+}
+
+async function api(path) {
+  if (!state.token) throw new Error("Adicione o token de leitura do TMDB nas configurações.");
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 15000);
+  try {
+    const response = await fetch(`${API}${path}`, {
+      headers: {
+        Authorization: `Bearer ${state.token}`,
+        Accept: "application/json",
+      },
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      if (response.status === 401) throw new Error("Token do TMDB inválido. Confira as configurações.");
+      if (response.status === 429) throw new Error("O TMDB recebeu muitas solicitações. Tente novamente em instantes.");
+      throw new Error(`Falha ao consultar o TMDB (HTTP ${response.status}).`);
+    }
+    return await response.json();
+  } catch (error) {
+    if (error.name === "AbortError") throw new Error("A conexão demorou demais. Verifique sua internet e tente novamente.");
+    throw error;
+  } finally {
+    window.clearTimeout(timeout);
+  }
+}
+
+function card(item) {
+  const type = mediaType(item);
+  const name = item.title || item.name || "Sem título";
+  const saved = state.list.some((entry) => entry.id === item.id && entry.type === type);
+  const year = (item.release_date || item.first_air_date || "").slice(0, 4) || "—";
+  return `<article class="movie-card" data-id="${Number(item.id)}" data-type="${type}">
+    <button class="poster-button" data-action="details" aria-label="Ver ${escapeHtml(name)}">
+      ${poster(item) ? `<img loading="lazy" src="${poster(item)}" alt="Pôster de ${escapeHtml(name)}">` : `<div class="no-poster">DGfilms</div>`}
+      <span class="rating">★ ${Number(item.vote_average || 0).toFixed(1)}</span>
+    </button>
+    <div class="movie-meta"><h3>${escapeHtml(name)}</h3><span>${year} · ${type === "tv" ? "Série" : "Filme"}</span></div>
+    <button class="save-btn ${saved ? "saved" : ""}" data-action="save" aria-label="${saved ? "Remover da" : "Adicionar à"} minha lista">${saved ? "♥" : "＋"}</button>
+  </article>`;
+}
+
+function updateMoreButton() {
+  const visible = state.page !== "watchlist" && state.currentPage < state.totalPages && state.currentItems.length > 0;
+  moreButton.classList.toggle("hidden", !visible);
+  moreButton.disabled = state.loading;
+  moreButton.textContent = state.loading ? "Carregando..." : "Carregar mais títulos";
+}
+
+function render(items, append = false) {
+  if (!append) grid.innerHTML = "";
+  if (!items.length && !append) {
+    grid.innerHTML = `<div class="empty">Nenhum título encontrado. Tente outro termo de pesquisa.</div>`;
+  } else {
+    grid.insertAdjacentHTML("beforeend", items.map(card).join(""));
+  }
+  updateMoreButton();
+}
+
+function toggleSave(item) {
+  const id = Number(item.id);
+  const type = item.type || mediaType(item);
+  const index = state.list.findIndex((entry) => entry.id === id && entry.type === type);
+  if (index >= 0) {
+    state.list.splice(index, 1);
+    toast("Removido da sua lista");
+  } else {
+    state.list.push({
+      id,
+      type,
+      title: item.title || item.name || item.name,
+      poster_path: item.poster_path || "",
+      release_date: item.release_date || item.first_air_date || "",
+      vote_average: Number(item.vote_average || 0),
+    });
+    toast("Adicionado à sua lista");
+  }
+  localStorage.setItem("dgfilms_list", JSON.stringify(state.list));
+  if (state.page === "watchlist") {
+    showWatchlist();
+  } else {
+    render(state.currentItems);
+  }
+}
+
+function showWatchlist() {
+  state.currentItems = state.list.map((entry) => ({ ...entry, media_type: entry.type }));
+  state.currentPage = 0;
+  state.totalPages = 0;
+  $("#details").classList.add("hidden");
+  $("#hero").classList.add("hidden");
+  $("#search-panel").classList.add("hidden");
+  title.textContent = "Minha lista";
+  $("#section-kicker").textContent = "SALVOS NESTE DISPOSITIVO";
+  status.textContent = `${state.list.length} título(s) salvo(s)`;
+  moreButton.classList.add("hidden");
+  render(state.currentItems);
+}
+
+function currentPath(pageNumber) {
+  const common = `language=pt-BR&page=${pageNumber}`;
+  if (state.query) return `/search/multi?query=${encodeURIComponent(state.query)}&include_adult=false&${common}`;
+  if (state.page === "movies") return `/movie/popular?${common}`;
+  if (state.page === "tv") return `/tv/popular?${common}`;
+  return `/trending/all/week?${common}`;
+}
+
+async function loadPage({ append = false } = {}) {
+  if (state.page === "watchlist") return showWatchlist();
+  if (state.loading) return;
+  if (!append) {
+    state.currentPage = 0;
+    state.currentItems = [];
+    state.totalPages = 1;
+  }
+  const requestId = ++state.requestId;
+  const requestedPage = append ? state.currentPage + 1 : 1;
+  state.loading = true;
+  $("#details").classList.add("hidden");
+  $("#hero").classList.toggle("hidden", state.page !== "home" || Boolean(state.query));
+  $("#search-panel").classList.toggle("hidden", !state.query && !state.searchOpen);
+  const labels = { home: "Em destaque", movies: "Filmes populares", tv: "Séries populares" };
+  title.textContent = state.query ? `Resultados para “${state.query}”` : (labels[state.page] || "Explorar");
+  $("#section-kicker").textContent = state.query ? "PESQUISA" : "EXPLORE O CATÁLOGO";
+  status.textContent = append ? "Buscando mais títulos..." : "Carregando catálogo...";
+  updateMoreButton();
+  try {
+    const data = await api(currentPath(requestedPage));
+    if (requestId !== state.requestId) return;
+    const results = (data.results || []).filter((item) => item.media_type !== "person");
+    state.currentPage = requestedPage;
+    state.totalPages = Math.max(1, Math.min(Number(data.total_pages || 1), 500));
+    state.currentItems = append ? [...state.currentItems, ...results] : results;
+    render(results, append);
+    status.textContent = `${Number(data.total_results || 0).toLocaleString("pt-BR")} resultados no TMDB · página ${state.currentPage}`;
+    updateMoreButton();
+  } catch (error) {
+    if (requestId !== state.requestId) return;
+    if (!append) render([]);
+    status.textContent = error.message;
+    toast(error.message);
+  } finally {
+    if (requestId === state.requestId) {
+      state.loading = false;
+      updateMoreButton();
+    }
+  }
+}
+
+async function details(id, type) {
+  try {
+    const data = await api(`/${type}/${id}?language=pt-BR&append_to_response=credits`);
+    const name = data.title || data.name || "Sem título";
+    const date = data.release_date || data.first_air_date || "";
+    const cast = (data.credits?.cast || []).slice(0, 5).map((person) => escapeHtml(person.name)).join(" · ");
+    const genres = (data.genres || []).map((genre) => escapeHtml(genre.name)).join(" / ");
+    const backdrop = data.backdrop_path ? `${BACKDROP}${data.backdrop_path}` : "";
+    $("#details").innerHTML = `<div class="detail-backdrop" style="background-image:linear-gradient(90deg,#090b12 12%,rgba(9,11,18,.76),#090b12),url('${backdrop}')">
+      <button class="secondary" id="back-grid">← Voltar ao catálogo</button>
+      <div class="detail-content"><span class="eyebrow">${type === "tv" ? "SÉRIE" : "FILME"} · ${date.slice(0, 4)}</span>
+      <h2>${escapeHtml(name)}</h2><p>${escapeHtml(data.overview || "Sinopse não disponível.")}</p>
+      <div class="detail-facts">★ ${Number(data.vote_average || 0).toFixed(1)} ${genres ? ` · ${genres}` : ""}</div>
+      ${cast ? `<div class="cast"><b>Elenco:</b> ${cast}</div>` : ""}
+      <button class="primary" id="detail-save">${state.list.some((entry) => entry.id === Number(id) && entry.type === type) ? "♥ Na minha lista" : "＋ Minha lista"}</button>
+      </div></div>
+      <div class="detail-note"><b>Sobre assistir</b><p>O DGfilms organiza informações e descoberta de títulos. A reprodução deve ser feita por serviços oficiais ou por arquivos e bibliotecas de mídia que você tenha autorização para acessar.</p><a href="https://www.themoviedb.org/${type}/${Number(id)}" target="_blank" rel="noopener noreferrer">Abrir página oficial do título no TMDB ↗</a></div>`;
+    $("#details").classList.remove("hidden");
+    $("#hero").classList.add("hidden");
+    moreButton.classList.add("hidden");
+    grid.innerHTML = "";
+    $("#details").scrollIntoView({ behavior: "smooth" });
+    $("#back-grid").onclick = () => {
+      $("#details").classList.add("hidden");
+      render(state.currentItems);
+      $("#hero").classList.toggle("hidden", state.page !== "home" || Boolean(state.query));
+    };
+    $("#detail-save").onclick = () => toggleSave({ ...data, id: Number(id), type });
+  } catch (error) {
+    toast(error.message);
+  }
+}
+
+function setPage(page) {
+  state.page = page;
+  state.query = "";
+  state.searchOpen = false;
+  $("#search-input").value = "";
+  document.querySelectorAll(".nav").forEach((button) => button.classList.toggle("active", button.dataset.page === page));
+  if (page === "watchlist") showWatchlist();
+  else loadPage();
+}
+
+document.querySelectorAll(".nav").forEach((button) => {
+  button.addEventListener("click", () => setPage(button.dataset.page));
+});
+
+grid.addEventListener("click", (event) => {
+  const actionButton = event.target.closest("[data-action]");
+  if (!actionButton) return;
+  const cardElement = actionButton.closest(".movie-card");
+  if (!cardElement) return;
+  const item = state.currentItems.find((entry) => Number(entry.id) === Number(cardElement.dataset.id) && mediaType(entry) === cardElement.dataset.type);
+  if (!item) return;
+  if (actionButton.dataset.action === "details") details(cardElement.dataset.id, cardElement.dataset.type);
+  if (actionButton.dataset.action === "save") toggleSave(item);
+});
+
+$("#search-open").addEventListener("click", () => {
+  state.searchOpen = true;
+  $("#search-panel").classList.remove("hidden");
+  $("#search-input").focus();
+});
+$("#search-close").addEventListener("click", () => {
+  state.query = "";
+  state.searchOpen = false;
+  $("#search-input").value = "";
+  loadPage();
+});
+let searchTimer;
+$("#search-input").addEventListener("input", (event) => {
+  window.clearTimeout(searchTimer);
+  state.query = event.target.value.trim();
+  searchTimer = window.setTimeout(() => loadPage(), 400);
+});
+$("#load-more").addEventListener("click", () => loadPage({ append: true }));
+$("#explore").addEventListener("click", () => $(".content-section").scrollIntoView({ behavior: "smooth" }));
+$("#hero-info").addEventListener("click", () => toast("O DGfilms reúne informações públicas de filmes e séries para ajudar você a descobrir o que assistir."));
+
+function openSettings() {
+  modal.classList.remove("hidden");
+  $("#api-token").value = state.token;
+}
+$("#settings-open").addEventListener("click", openSettings);
+$("#footer-settings").addEventListener("click", openSettings);
+$("#modal-close").addEventListener("click", () => modal.classList.add("hidden"));
+$("#save-token").addEventListener("click", () => {
+  state.token = $("#api-token").value.trim();
+  if (state.token) localStorage.setItem("dgfilms_tmdb_token", state.token);
+  else localStorage.removeItem("dgfilms_tmdb_token");
+  modal.classList.add("hidden");
+  toast(state.token ? "Token salvo neste dispositivo" : "Token removido");
+  loadPage();
+});
+
+if (!state.token) openSettings();
+else loadPage();
+
+  </script>
+</body>
+</html>
